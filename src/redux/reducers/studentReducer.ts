@@ -12,11 +12,15 @@ export interface StudentType {
 
 export interface StudentState {
   loading: boolean;
+  refreshinng: boolean;
+  endList: boolean;
   StudentList: StudentType[];
 }
 
 const initialState: StudentState = {
   loading: false,
+  refreshinng: false,
+  endList: false,
   StudentList: [],
 };
 
@@ -27,19 +31,31 @@ export const StudentSlice = createSlice({
     resetStudentList: state => {
       state.StudentList = [];
     },
+    setRefreshing: (state, action) => {
+      state.refreshinng = action.payload;
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setEndList: (state, action) => {
+      state.endList = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
       .addCase(getListStudent.pending, state => {
-        state.loading = true;
-        console.log('Pending: get student list');
         console.log(state.StudentList);
+        console.log('Pending: get student list');
       })
       .addCase(getListStudent.fulfilled, (state, action) => {
         console.log('Successful: get student list');
-        state.StudentList = action.payload;
-        console.log(state.StudentList);
+        state.StudentList = [...state.StudentList, ...action.payload];
+        if (action.payload.length === 0) {
+          state.endList = true;
+          state.loading = false;
+        }
         state.loading = false;
+        state.refreshinng = false;
       })
       .addCase(getListStudent.rejected, (state, action) => {
         state.loading = false;
@@ -48,5 +64,6 @@ export const StudentSlice = createSlice({
   },
 });
 
-export const {resetStudentList} = StudentSlice.actions;
+export const {resetStudentList, setRefreshing, setLoading, setEndList} =
+  StudentSlice.actions;
 export default StudentSlice.reducer;

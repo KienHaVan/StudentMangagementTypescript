@@ -1,15 +1,30 @@
-import React, {useEffect} from 'react';
-import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  RefreshControl,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {
   resetStudentList,
+  setEndList,
+  setLoading,
+  setRefreshing,
   StudentType,
 } from '../../redux/reducers/studentReducer';
 import {getListStudent} from '../../redux/thunks/StudentThunk';
 
 const StudentScreen = () => {
   const dispatch = useAppDispatch();
+  const [currentPage, setCurrentPage] = useState(1);
+  const loading = useAppSelector(state => state.student.loading);
+  const refreshing = useAppSelector(state => state.student.refreshinng);
   const StudentList = useAppSelector(state => state.student.StudentList);
+  const endList = useAppSelector(state => state.student.endList);
   useEffect(() => {
     dispatch(resetStudentList());
     dispatch(getListStudent(1));
@@ -17,6 +32,29 @@ const StudentScreen = () => {
   const renderItem = ({item}: {item: StudentType}) => (
     <StudentCard data={item} />
   );
+  const onRefresh = () => {
+    dispatch(setRefreshing(true));
+    setCurrentPage(1);
+    dispatch(resetStudentList());
+    dispatch(getListStudent(1));
+    dispatch(setEndList(false));
+  };
+  const onScroll = () => {
+    console.log(loading, endList);
+    if (!loading && !endList) {
+      dispatch(setLoading(true));
+      const newPage = currentPage + 1;
+      dispatch(getListStudent(newPage));
+      setCurrentPage(newPage);
+    }
+  };
+  const renderFooter = () => {
+    if (!loading) {
+      return null;
+    }
+    return <ActivityIndicator size="large" color="#ff0000" />;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
@@ -27,8 +65,13 @@ const StudentScreen = () => {
           data={StudentList}
           keyExtractor={item => item.id}
           renderItem={renderItem}
-          // contentContainerStyle={{paddingBottom: 20}}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          ListFooterComponent={renderFooter}
+          onEndReached={onScroll}
+          onEndReachedThreshold={0}
         />
       </View>
     </View>
