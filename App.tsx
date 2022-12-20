@@ -3,7 +3,7 @@ import React from 'react';
 import {StyleSheet} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {Provider} from 'react-redux';
-import MainTabNavigator from './src/navigation/MainTabNavigator';
+import RootStackNavigator from './src/navigation/RootStackNavigator';
 import {store} from './src/redux/store';
 
 const App = () => {
@@ -11,7 +11,7 @@ const App = () => {
     <NavigationContainer>
       <Provider store={store}>
         <SafeAreaView style={styles.container}>
-          <MainTabNavigator />
+          <RootStackNavigator />
         </SafeAreaView>
       </Provider>
     </NavigationContainer>

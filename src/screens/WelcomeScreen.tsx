@@ -1,5 +1,5 @@
-import {View, Text, Button} from 'react-native';
 import React, {useEffect, useState} from 'react';
+import {Button, Text, View} from 'react-native';
 
 interface Data {
   text: string;

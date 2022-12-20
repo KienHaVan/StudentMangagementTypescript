@@ -1,21 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
+import {StudentState} from '../../types/data.types';
 import {getListStudent} from '../thunks/StudentThunk';
-
-export interface StudentType {
-  age: number;
-  avatar: string;
-  createdAt: string;
-  email: string;
-  id: string;
-  name: string;
-}
-
-export interface StudentState {
-  loading: boolean;
-  refreshinng: boolean;
-  endList: boolean;
-  StudentList: StudentType[];
-}
 
 const initialState: StudentState = {
   loading: false,

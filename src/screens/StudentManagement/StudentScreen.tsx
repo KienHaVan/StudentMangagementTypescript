@@ -19,7 +19,7 @@ import {
   StudentType,
 } from '../../redux/reducers/studentReducer';
 import {getListStudent} from '../../redux/thunks/StudentThunk';
-import {StudentNavigationProp} from '../../types/navigation.type';
+import {StudentNavigationProp} from '../../types/navigation.types';
 
 const StudentScreen = () => {
   const navigation = useNavigation<StudentNavigationProp>();
