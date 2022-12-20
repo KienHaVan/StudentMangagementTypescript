@@ -3,12 +3,7 @@ import React from 'react';
 import AddStudentScreen from '../screens/StudentManagement/AddStudentScreen';
 import StudentDetailScreen from '../screens/StudentManagement/StudentDetailScreen';
 import StudentScreen from '../screens/StudentManagement/StudentScreen';
-
-type StudentStackParamList = {
-  Student: undefined;
-  StudentDetail: undefined;
-  AddStudent: undefined;
-};
+import {StudentStackParamList} from '../types/navigation.type';
 
 const StudentStack = createNativeStackNavigator<StudentStackParamList>();
 

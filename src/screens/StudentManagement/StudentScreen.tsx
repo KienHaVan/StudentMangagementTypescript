@@ -1,3 +1,4 @@
+import {useNavigation} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
 import {
   ActivityIndicator,
@@ -6,6 +7,7 @@ import {
   RefreshControl,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
@@ -17,8 +19,10 @@ import {
   StudentType,
 } from '../../redux/reducers/studentReducer';
 import {getListStudent} from '../../redux/thunks/StudentThunk';
+import {StudentNavigationProp} from '../../types/navigation.type';
 
 const StudentScreen = () => {
+  const navigation = useNavigation<StudentNavigationProp>();
   const dispatch = useAppDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const loading = useAppSelector(state => state.student.loading);
@@ -29,9 +33,7 @@ const StudentScreen = () => {
     dispatch(resetStudentList());
     dispatch(getListStudent(1));
   }, [dispatch]);
-  const renderItem = ({item}: {item: StudentType}) => (
-    <StudentCard data={item} />
-  );
+
   const onRefresh = () => {
     dispatch(setRefreshing(true));
     setCurrentPage(1);
@@ -40,7 +42,6 @@ const StudentScreen = () => {
     dispatch(setEndList(false));
   };
   const onScroll = () => {
-    console.log(loading, endList);
     if (!loading && !endList) {
       dispatch(setLoading(true));
       const newPage = currentPage + 1;
@@ -54,7 +55,9 @@ const StudentScreen = () => {
     }
     return <ActivityIndicator size="large" color="#ff0000" />;
   };
-
+  const renderItem = ({item}: {item: StudentType}) => (
+    <StudentCard data={item} />
+  );
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
@@ -74,6 +77,11 @@ const StudentScreen = () => {
           onEndReachedThreshold={0}
         />
       </View>
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('AddStudent')}>
+        <Text style={[styles.headingText, styles.textWhite]}>+</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -81,8 +89,11 @@ const StudentScreen = () => {
 export default StudentScreen;
 
 const StudentCard = ({data}: {data: StudentType}) => {
+  const navigation = useNavigation<StudentNavigationProp>();
   return (
-    <View style={styles.cardContainer}>
+    <TouchableOpacity
+      style={styles.cardContainer}
+      onPress={() => navigation.navigate('StudentDetail')}>
       <Image
         source={{
           uri: data.avatar,
@@ -101,7 +112,7 @@ const StudentCard = ({data}: {data: StudentType}) => {
           Email: {data.email}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -150,5 +161,20 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 1000,
     marginRight: 20,
+  },
+  addButton: {
+    width: 70,
+    height: 70,
+    backgroundColor: '#dc3545',
+    borderRadius: 1000,
+    elevation: 10,
+    position: 'absolute',
+    right: 20,
+    bottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textWhite: {
+    color: '#fff',
   },
 });

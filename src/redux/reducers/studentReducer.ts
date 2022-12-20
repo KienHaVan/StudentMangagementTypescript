@@ -43,8 +43,7 @@ export const StudentSlice = createSlice({
   },
   extraReducers: builder => {
     builder
-      .addCase(getListStudent.pending, state => {
-        console.log(state.StudentList);
+      .addCase(getListStudent.pending, () => {
         console.log('Pending: get student list');
       })
       .addCase(getListStudent.fulfilled, (state, action) => {

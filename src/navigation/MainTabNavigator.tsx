@@ -2,15 +2,11 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {RouteProp} from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
 import React, {useRef} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SubjectScreen from '../screens/StudentManagement/SubjectScreen';
+import {MainTabParamList} from '../types/navigation.type';
 import StudentStackNavigator from './StudentStackNavigator';
-
-type MainTabParamList = {
-  StudentStack: undefined;
-  Subject: undefined;
-};
 
 const BottomTab = ({
   focused,
@@ -96,13 +92,3 @@ const styles = StyleSheet.create({
     height: 24,
   },
 });
-
-function Demo() {
-  return (
-    <View
-      style={{flex: 1, justifyContent: 'space-between', alignItems: 'center'}}>
-      <Text>This is top text.</Text>
-      <Text>This is bottom text.</Text>
-    </View>
-  );
-}
