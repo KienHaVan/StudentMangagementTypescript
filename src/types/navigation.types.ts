@@ -34,6 +34,8 @@ export type AddStudentProps = NativeStackScreenProps<
   RootStackParamList,
   'AddStudent'
 >;
+export type AddStudentNavigationProp = AddStudentProps['navigation'];
+
 export type SubjectDetailProps = NativeStackScreenProps<
   RootStackParamList,
   'SubjectDetail'

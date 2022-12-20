@@ -3,7 +3,7 @@ export interface StudentType {
   avatar: string;
   createdAt: string;
   email: string;
-  id: string;
+  id?: string;
   name: string;
 }
 

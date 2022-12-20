@@ -1,6 +1,7 @@
+import {StudentType} from './../../types/data.types';
 import {createSlice} from '@reduxjs/toolkit';
 import {StudentState} from '../../types/data.types';
-import {getListStudent} from '../thunks/StudentThunk';
+import {getListStudent, postNewStudent} from '../thunks/StudentThunk';
 
 const initialState: StudentState = {
   loading: false,
@@ -44,6 +45,17 @@ export const StudentSlice = createSlice({
       .addCase(getListStudent.rejected, (state, action) => {
         state.loading = false;
         console.log('Fail: get student list', action.payload as string);
+      });
+    builder
+      .addCase(postNewStudent.pending, () => {
+        console.log('Pending: Post new student');
+      })
+      .addCase(postNewStudent.fulfilled, (state, action) => {
+        console.log('Successful: Post new student');
+        console.log('New Student', action.payload as StudentType);
+      })
+      .addCase(postNewStudent.rejected, (state, action) => {
+        console.log('Fail: Post new student', action.payload as string);
       });
   },
 });

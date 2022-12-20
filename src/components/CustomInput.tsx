@@ -12,6 +12,7 @@ const CustomInput = ({control, ...props}) => {
         onBlur={onBlur}
         onChangeText={onChange}
         value={value}
+        {...props}
         style={styles.input}
       />
     </View>
@@ -20,4 +21,18 @@ const CustomInput = ({control, ...props}) => {
 
 export default CustomInput;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  inputContainer: {
+    marginHorizontal: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderWidth: 2,
+    borderColor: '#eee',
+    borderRadius: 10,
+    backgroundColor: '#fff',
+    elevation: 10,
+  },
+  input: {
+    fontSize: 20,
+  },
+});

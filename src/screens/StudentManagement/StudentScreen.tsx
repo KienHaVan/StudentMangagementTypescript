@@ -16,9 +16,9 @@ import {
   setEndList,
   setLoading,
   setRefreshing,
-  StudentType,
 } from '../../redux/reducers/studentReducer';
 import {getListStudent} from '../../redux/thunks/StudentThunk';
+import {StudentType} from '../../types/data.types';
 import {StudentNavigationProp} from '../../types/navigation.types';
 
 const StudentScreen = () => {
@@ -66,7 +66,7 @@ const StudentScreen = () => {
       <View style={styles.content}>
         <FlatList
           data={StudentList}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id || item.email}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
           refreshControl={
