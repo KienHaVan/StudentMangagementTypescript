@@ -11,11 +11,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as yup from 'yup';
 import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
+import useAvatar from '../../hooks/useAvatar';
 import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
 import {
   enrollASubject,
@@ -61,42 +61,17 @@ const StudentDetailScreen = () => {
   const enrolledSubjects = useAppSelector(
     state => state.student.enrolledSubjects,
   );
-  console.log(
-    '🚀 ~ file: StudentDetailScreen.tsx:63 ~ StudentDetailScreen ~ enrolledSubjects',
-    enrolledSubjects,
-  );
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string | undefined>(studentData.avatar);
   useEffect(() => {
     dispatch(getListSubject());
     dispatch(initSubjectsBeforeUpdate(studentData.subjects));
   }, [dispatch, studentData.subjects]);
-  const handleChoosePhoto = () => {
-    launchImageLibrary(
-      {
-        mediaType: 'photo',
-      },
-      res => {
-        if (res?.assets) {
-          setAvatar(res?.assets[0]?.uri);
-        }
-      },
-    );
-    setModalVisible(false);
-  };
-  const handleTakePhoto = () => {
-    launchCamera(
-      {
-        mediaType: 'photo',
-      },
-      res => {
-        if (res?.assets) {
-          setAvatar(res?.assets[0]?.uri);
-        }
-      },
-    );
-    setModalVisible(false);
-  };
+  const {
+    avatar,
+    modalVisible,
+    setModalVisible,
+    handleChoosePhoto,
+    handleTakePhoto,
+  } = useAvatar(studentData.avatar);
   const {
     handleSubmit,
     control,

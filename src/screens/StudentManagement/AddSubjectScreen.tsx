@@ -5,13 +5,44 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
+  ScrollView,
 } from 'react-native';
 import React from 'react';
 import TopBackButton from '../../components/TopBackButton';
 import useAvatar from '../../hooks/useAvatar';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as yup from 'yup';
+import {SubmitHandler, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
+import CustomInput from '../../components/CustomInput';
+import {SubjectType} from '../../types/data.types';
+import dayjs from 'dayjs';
+import {useAppDispatch} from '../../hooks/useRedux';
+import {useNavigation} from '@react-navigation/native';
+import {AddStudentNavigationProp} from '../../types/navigation.types';
+import {postNewSubject} from '../../redux/thunks/SubjectThunk';
+const schema = yup
+  .object({
+    name: yup
+      .string()
+      .required('Please insert your name')
+      .max(20, 'Your name should be 20 charaters or less'),
+    teacher: yup
+      .number()
+      .required('Please insert the number of teachers')
+      .min(1, 'Your teacher number should be 1 or higher')
+      .max(60, 'Your teacher number should be 60 or less'),
+    classroom: yup
+      .number()
+      .required('Please insert the number of classrooms')
+      .min(1, 'Your classroom number should be 1 or higher')
+      .max(60, 'Your classroom number should be 60 or less'),
+  })
+  .required();
 
 const AddSubjectScreen = () => {
+  const dispatch = useAppDispatch();
+  const navigation = useNavigation<AddStudentNavigationProp>();
   const {
     avatar,
     modalVisible,
@@ -19,8 +50,29 @@ const AddSubjectScreen = () => {
     handleChoosePhoto,
     handleTakePhoto,
   } = useAvatar();
+  const {
+    handleSubmit,
+    control,
+    formState: {errors},
+  } = useForm<SubjectType>({
+    resolver: yupResolver(schema),
+    mode: 'onChange',
+  });
+  const onSubmit: SubmitHandler<SubjectType> = data => {
+    if (avatar) {
+      const newSubject = {
+        avatar,
+        name: data.name,
+        teacher: data.teacher,
+        classroom: data.classroom,
+        createdAt: dayjs().format().toString(),
+      };
+      dispatch(postNewSubject(newSubject));
+      navigation.goBack();
+    }
+  };
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <TopBackButton />
       <Modal
         animationType="slide"
@@ -62,7 +114,43 @@ const AddSubjectScreen = () => {
         </View>
       </TouchableOpacity>
       {!avatar && <Text style={styles.error}>Choose an avatar</Text>}
-    </View>
+      <View>
+        <Text style={styles.heading}>1. Subject Name</Text>
+        <CustomInput
+          control={control}
+          placeholder="Enter your subject name"
+          name="name"
+        />
+        {errors?.name && (
+          <Text style={styles.error}>{errors.name.message}</Text>
+        )}
+        <Text style={styles.heading}>2. Number of teachers</Text>
+        <CustomInput
+          control={control}
+          placeholder="Enter the number of teachers"
+          name="teacher"
+          keyboardType="numeric"
+        />
+        {errors?.teacher && (
+          <Text style={styles.error}>{errors.teacher.message}</Text>
+        )}
+        <Text style={styles.heading}>3. Number of classrooms</Text>
+        <CustomInput
+          control={control}
+          placeholder="Enter the number of classrooms"
+          name="classroom"
+          keyboardType="numeric"
+        />
+        {errors?.classroom && (
+          <Text style={styles.error}>{errors.classroom.message}</Text>
+        )}
+      </View>
+      <TouchableOpacity
+        style={[styles.modalButton, styles.mainButton]}
+        onPress={handleSubmit(onSubmit)}>
+        <Text style={[styles.modalButtonText]}>Create new subject</Text>
+      </TouchableOpacity>
+    </ScrollView>
   );
 };
 
@@ -127,4 +215,13 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
   },
+  heading: {
+    fontWeight: '800',
+    fontSize: 30,
+    color: '#000',
+    marginLeft: 20,
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  mainButton: {height: 60, marginTop: 30},
 });

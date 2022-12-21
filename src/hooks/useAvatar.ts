@@ -1,9 +1,9 @@
 import {useState} from 'react';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
-export default function useAvatar() {
+export default function useAvatar(studenAvatar?: string) {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string | undefined>('');
+  const [avatar, setAvatar] = useState<string | undefined>(studenAvatar || '');
   const handleChoosePhoto = () => {
     launchImageLibrary(
       {

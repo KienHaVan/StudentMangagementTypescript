@@ -1,8 +1,6 @@
-import {yupResolver} from '@hookform/resolvers/yup';
 import {useNavigation} from '@react-navigation/native';
 import dayjs from 'dayjs';
 import React from 'react';
-import {SubmitHandler, useForm} from 'react-hook-form';
 import {
   Image,
   Modal,
@@ -14,6 +12,8 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as yup from 'yup';
+import {SubmitHandler, useForm} from 'react-hook-form';
+import {yupResolver} from '@hookform/resolvers/yup';
 import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
 import useAvatar from '../../hooks/useAvatar';

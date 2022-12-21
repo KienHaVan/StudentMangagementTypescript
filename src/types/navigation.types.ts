@@ -4,13 +4,13 @@ import {
   CompositeScreenProps,
   NavigatorScreenParams,
 } from '@react-navigation/native';
-import {StudentType} from './data.types';
+import {StudentType, SubjectType} from './data.types';
 
 export type RootStackParamList = {
   MainTabNavigator: NavigatorScreenParams<MainTabParamList>;
   StudentDetail: {studentData: StudentType};
   AddStudent: undefined;
-  SubjectDetail: undefined;
+  SubjectDetail: {subjectData: SubjectType};
   AddSubject: undefined;
 };
 
@@ -50,8 +50,12 @@ export type SubjectDetailProps = NativeStackScreenProps<
   RootStackParamList,
   'SubjectDetail'
 >;
+export type SubjectDetailNavigationProps = SubjectDetailProps['navigation'];
+export type SubjectDetailRouteProp = SubjectDetailProps['route'];
 
 export type AddSubjectProps = NativeStackScreenProps<
   RootStackParamList,
   'AddSubject'
 >;
+export type AddSubjectNavigationProp = AddSubjectProps['navigation'];
+export type AddSubjectRouteProp = AddSubjectProps['route'];

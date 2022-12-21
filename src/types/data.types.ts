@@ -21,8 +21,8 @@ export interface SubjectType {
   createdAt: string;
   name: string;
   avatar: string;
-  teacher: number;
-  classroom: number;
+  teacher: number | string;
+  classroom: number | string;
 }
 
 export interface SubjectState {

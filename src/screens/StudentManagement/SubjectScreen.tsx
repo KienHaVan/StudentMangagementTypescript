@@ -17,12 +17,16 @@ import {
 import {getListSubject} from '../../redux/thunks/SubjectThunk';
 import {SubjectType} from '../../types/data.types';
 import {SubjectNavigationProp} from '../../types/navigation.types';
+import {compareValues} from '../../utils/sortArray';
 
 const SubjectScreen = () => {
   const dispatch = useAppDispatch();
   const navigation = useNavigation<SubjectNavigationProp>();
   const SubjectList = useAppSelector(state => state.subject.SubjectList);
   const refreshing = useAppSelector(state => state.subject.refreshing);
+  const SubjectListRendered = [...SubjectList].sort(
+    compareValues('createdAt', 'desc'),
+  );
   useEffect(() => {
     dispatch(getListSubject());
   }, [dispatch]);
@@ -41,7 +45,7 @@ const SubjectScreen = () => {
       </View>
       <View style={styles.content}>
         <FlatList
-          data={SubjectList}
+          data={SubjectListRendered}
           keyExtractor={item => item.id || item.avatar}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
@@ -129,7 +133,7 @@ const SubjectCard = ({data}: {data: SubjectType}) => {
   return (
     <TouchableOpacity
       style={styles.cardContainer}
-      onPress={() => navigation.navigate('SubjectDetail')}>
+      onPress={() => navigation.navigate('SubjectDetail', {subjectData: data})}>
       <Image
         source={{
           uri: data.avatar,

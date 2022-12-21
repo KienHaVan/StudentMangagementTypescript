@@ -1,6 +1,6 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {SubjectState} from '../../types/data.types';
-import {getListSubject} from '../thunks/SubjectThunk';
+import {SubjectState, SubjectType} from '../../types/data.types';
+import {getListSubject, postNewSubject} from '../thunks/SubjectThunk';
 
 const initialState: SubjectState = {
   refreshing: false,
@@ -20,15 +20,26 @@ export const SubjectSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(getListSubject.pending, () => {
-        console.log('Pending: get student list');
+        console.log('Pending: get subject list');
       })
       .addCase(getListSubject.fulfilled, (state, action) => {
-        console.log('Successful: get student list');
+        console.log('Successful: get subject list');
         state.SubjectList = action.payload;
         state.refreshing = false;
       })
       .addCase(getListSubject.rejected, (state, action) => {
-        console.log('Fail: get student list', action.payload as string);
+        console.log('Fail: get subject list', action.payload as string);
+      });
+    builder
+      .addCase(postNewSubject.pending, () => {
+        console.log('Pending: Post new subject');
+      })
+      .addCase(postNewSubject.fulfilled, (state, action) => {
+        console.log('Successful: Post new subject');
+        console.log('New subject', action.payload as SubjectType);
+      })
+      .addCase(postNewSubject.rejected, (state, action) => {
+        console.log('Fail: Post new subject', action.payload as string);
       });
   },
 });
