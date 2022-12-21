@@ -20,7 +20,7 @@ export interface SubjectType {
   id?: string;
   createdAt: string;
   name: string;
-  avatar: string;
+  avatar?: string;
   teacher: number | string;
   classroom: number | string;
   students?: StudentType[];

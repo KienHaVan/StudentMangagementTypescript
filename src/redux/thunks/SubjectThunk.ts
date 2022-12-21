@@ -40,3 +40,15 @@ export const updateStudentEnrolled = createAsyncThunk(
     }
   },
 );
+
+export const updateCurrentSubject = createAsyncThunk(
+  'subject/updateCurrentSubject',
+  async ({id, data}: {id: string; data: SubjectType}, {rejectWithValue}) => {
+    try {
+      await SubjectAPI.updateCurrentSubject(id, data);
+      return data;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);

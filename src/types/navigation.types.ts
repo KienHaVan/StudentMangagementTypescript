@@ -50,7 +50,7 @@ export type SubjectDetailProps = NativeStackScreenProps<
   RootStackParamList,
   'SubjectDetail'
 >;
-export type SubjectDetailNavigationProps = SubjectDetailProps['navigation'];
+export type SubjectDetailNavigationProp = SubjectDetailProps['navigation'];
 export type SubjectDetailRouteProp = SubjectDetailProps['route'];
 
 export type AddSubjectProps = NativeStackScreenProps<

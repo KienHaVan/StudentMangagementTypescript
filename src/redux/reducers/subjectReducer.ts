@@ -3,6 +3,7 @@ import {StudentType, SubjectState, SubjectType} from '../../types/data.types';
 import {
   getListSubject,
   postNewSubject,
+  updateCurrentSubject,
   updateStudentEnrolled,
 } from '../thunks/SubjectThunk';
 
@@ -61,6 +62,17 @@ export const SubjectSlice = createSlice({
           'Fail: Update enrolled student list',
           action.payload as string,
         );
+      });
+    builder
+      .addCase(updateCurrentSubject.pending, () => {
+        console.log('Pending: Update current subject');
+      })
+      .addCase(updateCurrentSubject.fulfilled, (state, action) => {
+        console.log('Successful: Update current subject');
+        console.log('Data updated: ', action.payload);
+      })
+      .addCase(updateCurrentSubject.rejected, (state, action) => {
+        console.log('Fail: Update current subject', action.payload as string);
       });
   },
 });

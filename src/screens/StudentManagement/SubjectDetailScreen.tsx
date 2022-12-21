@@ -1,6 +1,6 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {useRoute} from '@react-navigation/native';
-import React from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useState} from 'react';
 import {SubmitHandler, useForm} from 'react-hook-form';
 import {
   Image,
@@ -16,8 +16,13 @@ import * as yup from 'yup';
 import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
 import useAvatar from '../../hooks/useAvatar';
+import {useAppDispatch} from '../../hooks/useRedux';
+import {updateCurrentSubject} from '../../redux/thunks/SubjectThunk';
 import {StudentType, SubjectType} from '../../types/data.types';
-import {SubjectDetailRouteProp} from '../../types/navigation.types';
+import {
+  SubjectDetailRouteProp,
+  SubjectDetailNavigationProp,
+} from '../../types/navigation.types';
 
 const schema = yup
   .object({
@@ -39,13 +44,14 @@ const schema = yup
   .required();
 
 const SubjectDetailScreen = () => {
+  const dispatch = useAppDispatch();
+  const navigation = useNavigation<SubjectDetailNavigationProp>();
   const route = useRoute<SubjectDetailRouteProp>();
   const subjectData = route.params.subjectData;
-  const listStudenEnroll = subjectData.students;
-  console.log(
-    '🚀 ~ file: SubjectDetailScreen.tsx:45 ~ SubjectDetailScreen ~ listStudenEnroll',
-    listStudenEnroll,
-  );
+  const [listStudentEnroll, setListStudentEnroll] = useState([
+    ...subjectData.students!,
+  ]);
+
   const {
     handleSubmit,
     control,
@@ -67,7 +73,20 @@ const SubjectDetailScreen = () => {
     handleTakePhoto,
   } = useAvatar(subjectData.avatar);
   const onSubmit: SubmitHandler<SubjectType> = data => {
-    console.log(data);
+    const updateData: SubjectType = {
+      avatar,
+      name: data.name,
+      teacher: data.teacher,
+      classroom: data.classroom,
+      createdAt: subjectData.createdAt,
+      students: listStudentEnroll,
+      id: subjectData.id,
+    };
+    dispatch(updateCurrentSubject({id: subjectData.id!, data: updateData}));
+    navigation.goBack();
+  };
+  const handleDelete = (item: StudentType) => {
+    setListStudentEnroll(listStudentEnroll.filter(one => one.id !== item.id));
   };
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -140,8 +159,12 @@ const SubjectDetailScreen = () => {
           <Text style={styles.error}>{errors.classroom.message}</Text>
         )}
         <Text style={styles.heading}>4. List students enrolled</Text>
-        {listStudenEnroll?.map(item => (
-          <SubjectCard key={item.id} data={item} />
+        {listStudentEnroll?.map(item => (
+          <SubjectCard
+            key={item.id}
+            data={item}
+            handleDelete={() => handleDelete(item)}
+          />
         ))}
       </View>
       <TouchableOpacity
@@ -153,7 +176,13 @@ const SubjectDetailScreen = () => {
   );
 };
 
-const SubjectCard = ({data}: {data?: StudentType}) => {
+const SubjectCard = ({
+  data,
+  handleDelete,
+}: {
+  data?: StudentType;
+  handleDelete?: () => void;
+}) => {
   return (
     <View style={styles.subjectCard}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -169,6 +198,11 @@ const SubjectCard = ({data}: {data?: StudentType}) => {
           {data?.name || 'Mathematics'}
         </Text>
       </View>
+      <TouchableOpacity
+        style={[styles.modalButton, styles.unenrollButton]}
+        onPress={handleDelete}>
+        <Text style={styles.modalButtonText}>Delete</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -254,5 +288,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 8,
     marginBottom: 10,
+  },
+  unenrollButton: {
+    width: 100,
+    marginBottom: 0,
   },
 });

@@ -16,6 +16,9 @@ const SubjectAPI = {
       students: studentList,
     });
   },
+  updateCurrentSubject(id: string, data: SubjectType) {
+    return AxiosClient.put(`subjects/${id}`, data);
+  },
 };
 
 export default SubjectAPI;
