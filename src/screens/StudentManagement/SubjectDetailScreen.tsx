@@ -1,22 +1,22 @@
-import {
-  View,
-  Text,
-  Modal,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  ScrollView,
-} from 'react-native';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useRoute} from '@react-navigation/native';
 import React from 'react';
+import {SubmitHandler, useForm} from 'react-hook-form';
+import {
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import * as yup from 'yup';
+import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
 import useAvatar from '../../hooks/useAvatar';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import CustomInput from '../../components/CustomInput';
-import * as yup from 'yup';
-import {SubmitHandler, useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import {SubjectType} from '../../types/data.types';
-import {useRoute} from '@react-navigation/native';
+import {StudentType, SubjectType} from '../../types/data.types';
 import {SubjectDetailRouteProp} from '../../types/navigation.types';
 
 const schema = yup
@@ -41,9 +41,10 @@ const schema = yup
 const SubjectDetailScreen = () => {
   const route = useRoute<SubjectDetailRouteProp>();
   const subjectData = route.params.subjectData;
+  const listStudenEnroll = subjectData.students;
   console.log(
-    '🚀 ~ file: SubjectDetailScreen.tsx:44 ~ SubjectDetailScreen ~ subjectData',
-    subjectData,
+    '🚀 ~ file: SubjectDetailScreen.tsx:45 ~ SubjectDetailScreen ~ listStudenEnroll',
+    listStudenEnroll,
   );
   const {
     handleSubmit,
@@ -69,7 +70,7 @@ const SubjectDetailScreen = () => {
     console.log(data);
   };
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <TopBackButton />
       <Modal
         animationType="slide"
@@ -138,6 +139,10 @@ const SubjectDetailScreen = () => {
         {errors?.classroom && (
           <Text style={styles.error}>{errors.classroom.message}</Text>
         )}
+        <Text style={styles.heading}>4. List students enrolled</Text>
+        {listStudenEnroll?.map(item => (
+          <SubjectCard key={item.id} data={item} />
+        ))}
       </View>
       <TouchableOpacity
         style={[styles.modalButton, styles.mainButton]}
@@ -145,6 +150,26 @@ const SubjectDetailScreen = () => {
         <Text style={[styles.modalButtonText]}>Update subject info</Text>
       </TouchableOpacity>
     </ScrollView>
+  );
+};
+
+const SubjectCard = ({data}: {data?: StudentType}) => {
+  return (
+    <View style={styles.subjectCard}>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Image
+          source={{
+            uri:
+              data?.avatar ||
+              'https://images.pexels.com/photos/589840/pexels-photo-589840.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+          }}
+          style={{width: 36, height: 36, borderRadius: 1000, marginRight: 10}}
+        />
+        <Text style={[styles.modalButtonText, {color: '#000'}]}>
+          {data?.name || 'Mathematics'}
+        </Text>
+      </View>
+    </View>
   );
 };
 
@@ -218,4 +243,16 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   mainButton: {height: 60, marginTop: 30},
+  subjectCard: {
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    elevation: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
 });

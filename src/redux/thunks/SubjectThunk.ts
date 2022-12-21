@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit';
 import SubjectAPI from '../../api/SubjectAPI';
-import {SubjectType} from '../../types/data.types';
+import {StudentType, SubjectType} from '../../types/data.types';
 export const getListSubject = createAsyncThunk(
   'subject/getListSubject',
   async (_, {rejectWithValue}) => {
@@ -20,6 +20,21 @@ export const postNewSubject = createAsyncThunk(
     try {
       await SubjectAPI.postNewSubject(data);
       return data;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);
+
+export const updateStudentEnrolled = createAsyncThunk(
+  'subject/updateStudentEnrolled',
+  async (
+    {id, studentList}: {id: string; studentList: StudentType[]},
+    {rejectWithValue},
+  ) => {
+    try {
+      await SubjectAPI.updateStudentEnrolled(id, studentList);
+      return studentList;
     } catch (error) {
       return rejectWithValue((error as Error).message);
     }

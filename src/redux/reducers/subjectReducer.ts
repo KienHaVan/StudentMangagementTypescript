@@ -1,6 +1,10 @@
 import {createSlice} from '@reduxjs/toolkit';
-import {SubjectState, SubjectType} from '../../types/data.types';
-import {getListSubject, postNewSubject} from '../thunks/SubjectThunk';
+import {StudentType, SubjectState, SubjectType} from '../../types/data.types';
+import {
+  getListSubject,
+  postNewSubject,
+  updateStudentEnrolled,
+} from '../thunks/SubjectThunk';
 
 const initialState: SubjectState = {
   refreshing: false,
@@ -40,6 +44,23 @@ export const SubjectSlice = createSlice({
       })
       .addCase(postNewSubject.rejected, (state, action) => {
         console.log('Fail: Post new subject', action.payload as string);
+      });
+    builder
+      .addCase(updateStudentEnrolled.pending, () => {
+        console.log('Pending: Update enrolled student list');
+      })
+      .addCase(updateStudentEnrolled.fulfilled, (state, action) => {
+        console.log('Successful: Update enrolled student list');
+        console.log(
+          'New enrolled student list',
+          action.payload as StudentType[],
+        );
+      })
+      .addCase(updateStudentEnrolled.rejected, (state, action) => {
+        console.log(
+          'Fail: Update enrolled student list',
+          action.payload as string,
+        );
       });
   },
 });

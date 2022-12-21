@@ -23,6 +23,7 @@ export interface SubjectType {
   avatar: string;
   teacher: number | string;
   classroom: number | string;
+  students?: StudentType[];
 }
 
 export interface SubjectState {

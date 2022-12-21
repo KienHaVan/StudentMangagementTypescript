@@ -72,7 +72,7 @@ const AddSubjectScreen = () => {
     }
   };
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <TopBackButton />
       <Modal
         animationType="slide"

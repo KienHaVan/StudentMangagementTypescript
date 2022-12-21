@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as yup from 'yup';
+import SubjectAPI from '../../api/SubjectAPI';
 import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
 import useAvatar from '../../hooks/useAvatar';
@@ -23,7 +24,10 @@ import {
   unenrollASubject,
 } from '../../redux/reducers/studentReducer';
 import {updateCurrentStudent} from '../../redux/thunks/StudentThunk';
-import {getListSubject} from '../../redux/thunks/SubjectThunk';
+import {
+  getListSubject,
+  updateStudentEnrolled,
+} from '../../redux/thunks/SubjectThunk';
 import {StudentType, SubjectType} from '../../types/data.types';
 import {
   StudentDetailNavigationProp,
@@ -61,6 +65,8 @@ const StudentDetailScreen = () => {
   const enrolledSubjects = useAppSelector(
     state => state.student.enrolledSubjects,
   );
+  console.log('studentData.subjects', studentData.subjects);
+
   useEffect(() => {
     dispatch(getListSubject());
     dispatch(initSubjectsBeforeUpdate(studentData.subjects));
@@ -95,6 +101,28 @@ const StudentDetailScreen = () => {
       subjects: enrolledSubjects,
       id: studentData.id,
     };
+    enrolledSubjects.map(item => {
+      SubjectAPI.getASubject(item.id!)
+        .then(res => res.data)
+        .then(subjectData => {
+          dispatch(
+            updateStudentEnrolled({
+              id: item.id!,
+              studentList: [
+                ...subjectData.students,
+                {
+                  avatar,
+                  name: data.name,
+                  age: data.age,
+                  email: data.email,
+                  createdAt: studentData.createdAt,
+                  id: studentData.id,
+                },
+              ],
+            }),
+          );
+        });
+    });
     dispatch(updateCurrentStudent({id: studentData.id!, data: updateData}));
     navigation.goBack();
   };
@@ -105,7 +133,7 @@ const StudentDetailScreen = () => {
     dispatch(unenrollASubject(item));
   };
   return (
-    <ScrollView>
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <TopBackButton />
       <Modal
         animationType="slide"
@@ -219,7 +247,17 @@ const SubjectCard = ({
   };
   return (
     <View style={styles.subjectCard}>
-      <Text style={[styles.modalButtonText, {color: '#000'}]}>{data.name}</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <Image
+          source={{
+            uri: data.avatar,
+          }}
+          style={{width: 36, height: 36, borderRadius: 1000, marginRight: 10}}
+        />
+        <Text style={[styles.modalButtonText, {color: '#000'}]}>
+          {data.name}
+        </Text>
+      </View>
       <TouchableOpacity
         style={[
           styles.modalButton,
