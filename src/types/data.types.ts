@@ -13,3 +13,17 @@ export interface StudentState {
   endList: boolean;
   StudentList: StudentType[];
 }
+
+export interface SubjectType {
+  id?: string;
+  createdAt: string;
+  name: string;
+  avatar: string;
+  teacher: number;
+  classroom: number;
+}
+
+export interface SubjectState {
+  refreshing: boolean;
+  SubjectList: SubjectType[];
+}

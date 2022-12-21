@@ -27,8 +27,8 @@ const StudentScreen = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const loading = useAppSelector(state => state.student.loading);
   const refreshing = useAppSelector(state => state.student.refreshinng);
-  const StudentList = useAppSelector(state => state.student.StudentList);
   const endList = useAppSelector(state => state.student.endList);
+  const StudentList = useAppSelector(state => state.student.StudentList);
   useEffect(() => {
     dispatch(resetStudentList());
     dispatch(getListStudent(1));
@@ -55,9 +55,10 @@ const StudentScreen = () => {
     }
     return <ActivityIndicator size="large" color="#ff0000" />;
   };
-  const renderItem = ({item}: {item: StudentType}) => (
-    <StudentCard data={item} />
-  );
+
+  const renderItem = ({item}: {item: StudentType}) => {
+    return <StudentCard data={item} />;
+  };
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
@@ -93,7 +94,7 @@ const StudentCard = ({data}: {data: StudentType}) => {
   return (
     <TouchableOpacity
       style={styles.cardContainer}
-      onPress={() => navigation.navigate('StudentDetail')}>
+      onPress={() => navigation.navigate('StudentDetail', {studentData: data})}>
       <Image
         source={{
           uri: data.avatar,

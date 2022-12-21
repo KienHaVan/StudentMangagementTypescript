@@ -48,7 +48,7 @@ const AddStudentScreen = () => {
   const navigation = useNavigation<AddStudentNavigationProp>();
   const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string>('');
+  const [avatar, setAvatar] = useState<string | undefined>('');
   const handleChoosePhoto = () => {
     launchImageLibrary(
       {
@@ -85,15 +85,17 @@ const AddStudentScreen = () => {
     mode: 'onChange',
   });
   const onSubmit: SubmitHandler<StudentType> = data => {
-    const newStudent = {
-      avatar,
-      name: data.name,
-      age: data.age,
-      email: data.email,
-      createdAt: dayjs().toString(),
-    };
-    dispatch(postNewStudent(newStudent));
-    navigation.goBack();
+    if (avatar) {
+      const newStudent = {
+        avatar,
+        name: data.name,
+        age: data.age,
+        email: data.email,
+        createdAt: dayjs().format().toString(),
+      };
+      dispatch(postNewStudent(newStudent));
+      navigation.goBack();
+    }
   };
   return (
     <ScrollView style={styles.container}>
@@ -167,7 +169,7 @@ const AddStudentScreen = () => {
         )}
       </View>
       <TouchableOpacity
-        style={[styles.modalButton, {height: 60, marginTop: 30}]}
+        style={[styles.modalButton, styles.mainButton]}
         onPress={handleSubmit(onSubmit)}>
         <Text style={[styles.modalButtonText]}>Create new student</Text>
       </TouchableOpacity>
@@ -244,4 +246,5 @@ const styles = StyleSheet.create({
     marginTop: 2,
     marginHorizontal: 20,
   },
+  mainButton: {height: 60, marginTop: 30},
 });
