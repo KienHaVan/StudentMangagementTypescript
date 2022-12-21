@@ -25,3 +25,15 @@ export const postNewStudent = createAsyncThunk(
     }
   },
 );
+
+export const updateCurrentStudent = createAsyncThunk(
+  'student/updateCurrentStudent',
+  async ({id, data}: {id: string; data: StudentType}, {rejectWithValue}) => {
+    try {
+      await StudentAPI.updateCurrentStudent(id, data);
+      return data;
+    } catch (error) {
+      return rejectWithValue((error as Error).message);
+    }
+  },
+);

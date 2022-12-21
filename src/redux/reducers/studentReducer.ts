@@ -1,13 +1,18 @@
-import {StudentType} from './../../types/data.types';
 import {createSlice} from '@reduxjs/toolkit';
 import {StudentState} from '../../types/data.types';
-import {getListStudent, postNewStudent} from '../thunks/StudentThunk';
+import {
+  getListStudent,
+  postNewStudent,
+  updateCurrentStudent,
+} from '../thunks/StudentThunk';
+import {StudentType} from './../../types/data.types';
 
 const initialState: StudentState = {
   loading: false,
   refreshinng: false,
   endList: false,
   StudentList: [],
+  enrolledSubjects: [],
 };
 
 export const StudentSlice = createSlice({
@@ -25,6 +30,17 @@ export const StudentSlice = createSlice({
     },
     setEndList: (state, action) => {
       state.endList = action.payload;
+    },
+    enrollASubject: (state, action) => {
+      state.enrolledSubjects = [...state.enrolledSubjects, action.payload];
+    },
+    unenrollASubject: (state, action) => {
+      state.enrolledSubjects = [...state.enrolledSubjects].filter(
+        item => item.id !== action.payload.id,
+      );
+    },
+    initSubjectsBeforeUpdate: (state, action) => {
+      state.enrolledSubjects = action.payload;
     },
   },
   extraReducers: builder => {
@@ -57,9 +73,27 @@ export const StudentSlice = createSlice({
       .addCase(postNewStudent.rejected, (state, action) => {
         console.log('Fail: Post new student', action.payload as string);
       });
+    builder
+      .addCase(updateCurrentStudent.pending, () => {
+        console.log('Pending: Update current student');
+      })
+      .addCase(updateCurrentStudent.fulfilled, (state, action) => {
+        console.log('Successful: Update current student');
+        console.log('Data updated: ', action.payload);
+      })
+      .addCase(updateCurrentStudent.rejected, (state, action) => {
+        console.log('Fail: Update current student', action.payload as string);
+      });
   },
 });
 
-export const {resetStudentList, setRefreshing, setLoading, setEndList} =
-  StudentSlice.actions;
+export const {
+  resetStudentList,
+  setRefreshing,
+  setLoading,
+  setEndList,
+  enrollASubject,
+  unenrollASubject,
+  initSubjectsBeforeUpdate,
+} = StudentSlice.actions;
 export default StudentSlice.reducer;

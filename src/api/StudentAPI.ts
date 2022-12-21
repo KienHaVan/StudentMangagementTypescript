@@ -8,6 +8,9 @@ const StudentAPI = {
   postNewStudent(data: StudentType) {
     return AxiosClient.post('students', data);
   },
+  updateCurrentStudent(id: string, data: StudentType) {
+    return AxiosClient.put(`students/${id}`, data);
+  },
 };
 
 export default StudentAPI;

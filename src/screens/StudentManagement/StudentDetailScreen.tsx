@@ -1,10 +1,11 @@
 import {yupResolver} from '@hookform/resolvers/yup';
-import {useRoute} from '@react-navigation/native';
-import React, {useState} from 'react';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import React, {useEffect, useState} from 'react';
 import {SubmitHandler, useForm} from 'react-hook-form';
 import {
   Image,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,8 +16,19 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import * as yup from 'yup';
 import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
-import {StudentType} from '../../types/data.types';
-import {StudetnDetailRouteProp} from '../../types/navigation.types';
+import {useAppDispatch, useAppSelector} from '../../hooks/useRedux';
+import {
+  enrollASubject,
+  initSubjectsBeforeUpdate,
+  unenrollASubject,
+} from '../../redux/reducers/studentReducer';
+import {updateCurrentStudent} from '../../redux/thunks/StudentThunk';
+import {getListSubject} from '../../redux/thunks/SubjectThunk';
+import {StudentType, SubjectType} from '../../types/data.types';
+import {
+  StudentDetailNavigationProp,
+  StudetnDetailRouteProp,
+} from '../../types/navigation.types';
 
 const schema = yup
   .object({
@@ -41,10 +53,24 @@ const schema = yup
   .required();
 
 const StudentDetailScreen = () => {
+  const navigation = useNavigation<StudentDetailNavigationProp>();
+  const dispatch = useAppDispatch();
   const route = useRoute<StudetnDetailRouteProp>();
   const studentData = route.params.studentData;
+  const SubjectList = useAppSelector(state => state.subject.SubjectList);
+  const enrolledSubjects = useAppSelector(
+    state => state.student.enrolledSubjects,
+  );
+  console.log(
+    '🚀 ~ file: StudentDetailScreen.tsx:63 ~ StudentDetailScreen ~ enrolledSubjects',
+    enrolledSubjects,
+  );
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [avatar, setAvatar] = useState<string | undefined>(studentData.avatar);
+  useEffect(() => {
+    dispatch(getListSubject());
+    dispatch(initSubjectsBeforeUpdate(studentData.subjects));
+  }, [dispatch, studentData.subjects]);
   const handleChoosePhoto = () => {
     launchImageLibrary(
       {
@@ -76,15 +102,35 @@ const StudentDetailScreen = () => {
     control,
     formState: {errors},
   } = useForm<StudentType>({
+    defaultValues: {
+      name: studentData.name,
+      age: studentData.age.toString(),
+      email: studentData.email,
+    },
     resolver: yupResolver(schema),
     mode: 'onChange',
   });
   const onSubmit: SubmitHandler<StudentType> = data => {
-    console.log(data);
+    const updateData: StudentType = {
+      avatar,
+      name: data.name,
+      age: data.age,
+      email: data.email,
+      createdAt: studentData.createdAt,
+      subjects: enrolledSubjects,
+      id: studentData.id,
+    };
+    dispatch(updateCurrentStudent({id: studentData.id!, data: updateData}));
+    navigation.goBack();
   };
-
+  const handleEnrollASubject = (item: SubjectType) => {
+    dispatch(enrollASubject(item));
+  };
+  const handleUnenrollASubject = (item: SubjectType) => {
+    dispatch(unenrollASubject(item));
+  };
   return (
-    <View>
+    <ScrollView>
       <TopBackButton />
       <Modal
         animationType="slide"
@@ -130,7 +176,6 @@ const StudentDetailScreen = () => {
           control={control}
           placeholder="Enter your full name"
           name="name"
-          defaultValue={studentData.name}
         />
         {errors?.name && (
           <Text style={styles.error}>{errors.name.message}</Text>
@@ -141,7 +186,6 @@ const StudentDetailScreen = () => {
           placeholder="Enter your age"
           name="age"
           keyboardType="numeric"
-          defaultValue={studentData.age.toString()}
         />
         {errors?.age && <Text style={styles.error}>{errors.age.message}</Text>}
         <Text style={styles.heading}>3. Email</Text>
@@ -149,16 +193,67 @@ const StudentDetailScreen = () => {
           control={control}
           placeholder="Enter your email"
           name="email"
-          defaultValue={studentData.email}
         />
         {errors?.email && (
           <Text style={styles.error}>{errors.email.message}</Text>
         )}
+        <Text style={styles.heading}>4. Subject Enroll</Text>
+        {SubjectList.map(item => (
+          <SubjectCard
+            key={item.id}
+            data={item}
+            defaultEnrolled={enrolledSubjects}
+            handleEnrollASubject={() => handleEnrollASubject(item)}
+            handleUnenrollASubject={() => handleUnenrollASubject(item)}
+          />
+        ))}
       </View>
       <TouchableOpacity
         style={[styles.modalButton, styles.mainButton]}
         onPress={handleSubmit(onSubmit)}>
         <Text style={[styles.modalButtonText]}>Update student info</Text>
+      </TouchableOpacity>
+    </ScrollView>
+  );
+};
+
+const SubjectCard = ({
+  data,
+  defaultEnrolled,
+  handleEnrollASubject,
+  handleUnenrollASubject,
+}: {
+  data: SubjectType;
+  defaultEnrolled?: (SubjectType | undefined)[];
+  handleEnrollASubject: () => void;
+  handleUnenrollASubject: () => void;
+}) => {
+  const [enrollState, setEnrollState] = useState(false);
+  useEffect(() => {
+    if (defaultEnrolled?.length! > 0) {
+      defaultEnrolled?.map(item => {
+        if (item?.id === data.id) {
+          setEnrollState(true);
+        }
+      });
+    }
+  }, [data.id, defaultEnrolled]);
+  const onUnenrollASubject = () => {
+    handleUnenrollASubject();
+    setEnrollState(false);
+  };
+  return (
+    <View style={styles.subjectCard}>
+      <Text style={[styles.modalButtonText, {color: '#000'}]}>{data.name}</Text>
+      <TouchableOpacity
+        style={[
+          styles.modalButton,
+          enrollState ? styles.unenrollButton : styles.enrollButton,
+        ]}
+        onPress={enrollState ? onUnenrollASubject : handleEnrollASubject}>
+        <Text style={styles.modalButtonText}>
+          {enrollState ? 'Unenroll' : 'Enroll'}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -234,4 +329,25 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   mainButton: {height: 60, marginTop: 30},
+  subjectCard: {
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    elevation: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  enrollButton: {
+    width: 100,
+    marginBottom: 0,
+    backgroundColor: '#28a745',
+  },
+  unenrollButton: {
+    width: 100,
+    marginBottom: 0,
+  },
 });

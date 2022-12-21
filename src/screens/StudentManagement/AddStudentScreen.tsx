@@ -1,4 +1,8 @@
-import React, {useState} from 'react';
+import {yupResolver} from '@hookform/resolvers/yup';
+import {useNavigation} from '@react-navigation/native';
+import dayjs from 'dayjs';
+import React from 'react';
+import {SubmitHandler, useForm} from 'react-hook-form';
 import {
   Image,
   Modal,
@@ -8,18 +12,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import * as yup from 'yup';
 import CustomInput from '../../components/CustomInput';
 import TopBackButton from '../../components/TopBackButton';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import {useForm, SubmitHandler} from 'react-hook-form';
-import {StudentType} from '../../types/data.types';
-import dayjs from 'dayjs';
+import useAvatar from '../../hooks/useAvatar';
 import {useAppDispatch} from '../../hooks/useRedux';
 import {postNewStudent} from '../../redux/thunks/StudentThunk';
-import {useNavigation} from '@react-navigation/native';
+import {StudentType} from '../../types/data.types';
 import {AddStudentNavigationProp} from '../../types/navigation.types';
 
 const schema = yup
@@ -47,35 +47,13 @@ const schema = yup
 const AddStudentScreen = () => {
   const navigation = useNavigation<AddStudentNavigationProp>();
   const dispatch = useAppDispatch();
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [avatar, setAvatar] = useState<string | undefined>('');
-  const handleChoosePhoto = () => {
-    launchImageLibrary(
-      {
-        mediaType: 'photo',
-      },
-      res => {
-        if (res?.assets) {
-          setAvatar(res?.assets[0]?.uri);
-        }
-      },
-    );
-    setModalVisible(false);
-  };
-  const handleTakePhoto = () => {
-    launchCamera(
-      {
-        mediaType: 'photo',
-      },
-      res => {
-        if (res?.assets) {
-          setAvatar(res?.assets[0]?.uri);
-        }
-      },
-    );
-    setModalVisible(false);
-  };
-
+  const {
+    avatar,
+    modalVisible,
+    setModalVisible,
+    handleChoosePhoto,
+    handleTakePhoto,
+  } = useAvatar();
   const {
     handleSubmit,
     control,

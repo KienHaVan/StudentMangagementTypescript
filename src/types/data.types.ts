@@ -1,10 +1,11 @@
 export interface StudentType {
-  age: number;
-  avatar: string;
+  age: number | string;
+  avatar?: string;
   createdAt: string;
   email: string;
   id?: string;
   name: string;
+  subjects?: (SubjectType | undefined)[];
 }
 
 export interface StudentState {
@@ -12,6 +13,7 @@ export interface StudentState {
   refreshinng: boolean;
   endList: boolean;
   StudentList: StudentType[];
+  enrolledSubjects: SubjectType[];
 }
 
 export interface SubjectType {
