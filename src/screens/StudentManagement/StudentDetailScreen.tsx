@@ -65,11 +65,10 @@ const StudentDetailScreen = () => {
   const enrolledSubjects = useAppSelector(
     state => state.student.enrolledSubjects,
   );
-  console.log('studentData.subjects', studentData.subjects);
 
   useEffect(() => {
-    dispatch(getListSubject());
     dispatch(initSubjectsBeforeUpdate(studentData.subjects));
+    dispatch(getListSubject());
   }, [dispatch, studentData.subjects]);
   const {
     avatar,
@@ -205,7 +204,7 @@ const StudentDetailScreen = () => {
           <SubjectCard
             key={item.id}
             data={item}
-            defaultEnrolled={enrolledSubjects}
+            defaultEnrolled={studentData.subjects}
             handleEnrollASubject={() => handleEnrollASubject(item)}
             handleUnenrollASubject={() => handleUnenrollASubject(item)}
           />
@@ -245,6 +244,10 @@ const SubjectCard = ({
     handleUnenrollASubject();
     setEnrollState(false);
   };
+  const onEnrollASubject = () => {
+    handleEnrollASubject();
+    setEnrollState(true);
+  };
   return (
     <View style={styles.subjectCard}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -263,7 +266,7 @@ const SubjectCard = ({
           styles.modalButton,
           enrollState ? styles.unenrollButton : styles.enrollButton,
         ]}
-        onPress={enrollState ? onUnenrollASubject : handleEnrollASubject}>
+        onPress={enrollState ? onUnenrollASubject : onEnrollASubject}>
         <Text style={styles.modalButtonText}>
           {enrollState ? 'Unenroll' : 'Enroll'}
         </Text>

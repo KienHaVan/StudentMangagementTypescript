@@ -33,7 +33,6 @@ const StudentScreen = () => {
     dispatch(resetStudentList());
     dispatch(getListStudent(1));
   }, [dispatch]);
-
   const onRefresh = () => {
     dispatch(setRefreshing(true));
     setCurrentPage(1);
